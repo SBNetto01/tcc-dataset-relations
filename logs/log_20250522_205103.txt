@@ -1,0 +1,20 @@
+2025-05-22 20:51:03,888 - tcc_logger - main - INFO - Iniciando processo de identificação de chaves PK e FK.
+2025-05-22 20:51:03,888 - tcc_logger - main - INFO - Carregando dataset: Advanced de datasets\Advanced.csv
+2025-05-22 20:51:03,975 - tcc_logger - main - INFO - Dataset Advanced carregado com 32589 linhas e 32 colunas.
+2025-05-22 20:51:03,976 - tcc_logger - main - INFO - Carregando dataset: Player Play By Play de datasets\Player Play By Play.csv
+2025-05-22 20:51:04,016 - tcc_logger - main - INFO - Dataset Player Play By Play carregado com 17504 linhas e 28 colunas.
+2025-05-22 20:51:04,016 - tcc_logger - main - INFO - --- Fase de Perfilamento e Identificação de PKs ---
+2025-05-22 20:51:04,016 - tcc_logger - main - INFO - Perfilando dataset: Advanced
+2025-05-22 20:51:04,082 - tcc_logger - main - INFO - Candidatas a PK para Advanced:
+2025-05-22 20:51:04,082 - tcc_logger - main - INFO -   - Coluna: seas_id, Unicidade: 99.98%, Não Nulos: 99.98%
+2025-05-22 20:51:04,082 - tcc_logger - main - INFO - Perfilando dataset: Player Play By Play
+2025-05-22 20:51:04,118 - tcc_logger - main - INFO - Candidatas a PK para Player Play By Play:
+2025-05-22 20:51:04,118 - tcc_logger - main - INFO -   - Coluna: seas_id, Unicidade: 99.97%, Não Nulos: 99.97%
+2025-05-22 20:51:04,118 - tcc_logger - main - INFO - --- Fase de Identificação de FKs ---
+2025-05-22 20:51:04,119 - tcc_logger - main - INFO - Verificando FKs de Advanced para PKs em Player Play By Play
+2025-05-22 20:51:04,132 - tcc_logger - main - INFO - Verificando FKs de Player Play By Play para PKs em Advanced
+2025-05-22 20:51:04,143 - tcc_logger - main - INFO - Encontradas 2 potenciais FKs de Player Play By Play para Advanced.
+2025-05-22 20:51:04,143 - tcc_logger - main - INFO - --- Sumário dos Resultados ---
+2025-05-22 20:51:04,143 - tcc_logger - main - INFO - Total de 2 potenciais relações FK identificadas.
+2025-05-22 20:51:04,144 - tcc_logger - main - INFO - Resultados da identificação de FKs exportados para: output\fk_identification_results.txt
+2025-05-22 20:51:04,144 - tcc_logger - main - INFO - Processo de identificação de chaves finalizado.

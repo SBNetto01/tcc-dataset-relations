@@ -1,0 +1,7 @@
+--- Resultados da Identificação de Chaves Estrangeiras (FKs) ---
+FK: Player Play By Play.[seas_id] (float64) --> PK: Advanced.[seas_id] (float64)
+  Inclusão: 100.0% | Similaridade de Nome: 100.0%
+  ------------------------------------------------------------
+FK: Player Play By Play.[player_id] (float64) --> PK: Advanced.[seas_id] (float64)
+  Inclusão: 100.0% | Similaridade de Nome: 50.0%
+  ------------------------------------------------------------
