@@ -1,0 +1,9 @@
+# Arquivos de cache do Python
+__pycache__/
+*.pyc
+
+# Arquivos de output gerados pelo programa
+output/
+
+# Arquivos de log
+logs/
