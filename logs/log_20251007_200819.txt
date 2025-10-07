@@ -1,0 +1,23 @@
+2025-10-07 20:08:47,270 - DataRelationFinder - api - INFO - Recebida requisição de análise para 3 arquivos.
+2025-10-07 20:08:47,271 - DataRelationFinder - api - INFO - Processando arquivo: tabela_academica_grande.csv
+2025-10-07 20:08:47,293 - DataRelationFinder - api - INFO - Processando arquivo: tabela_federal_grande.csv
+2025-10-07 20:08:47,322 - DataRelationFinder - api - INFO - Processando arquivo: tabela_principal_grande.csv
+2025-10-07 20:08:47,356 - DataRelationFinder - main - INFO - Iniciando perfilamento para 3 datasets.
+2025-10-07 20:08:47,356 - DataRelationFinder - main - INFO - Perfilando dataset: tabela_academica_grande
+2025-10-07 20:08:47,381 - DataRelationFinder - main - INFO - Perfilando dataset: tabela_federal_grande
+2025-10-07 20:08:47,424 - DataRelationFinder - main - INFO - Perfilando dataset: tabela_principal_grande
+2025-10-07 20:08:47,465 - DataRelationFinder - main - INFO - Iniciando fase de identificação de FKs.
+2025-10-07 20:08:47,465 - DataRelationFinder - main - INFO - Verificando FKs de tabela_academica_grande para PKs em tabela_federal_grande
+2025-10-07 20:08:47,491 - DataRelationFinder - main - INFO - Encontradas 1 potenciais FKs.
+2025-10-07 20:08:47,491 - DataRelationFinder - main - INFO - Verificando FKs de tabela_academica_grande para PKs em tabela_principal_grande
+2025-10-07 20:08:47,503 - DataRelationFinder - main - INFO - Encontradas 1 potenciais FKs.
+2025-10-07 20:08:47,503 - DataRelationFinder - main - INFO - Verificando FKs de tabela_federal_grande para PKs em tabela_academica_grande
+2025-10-07 20:08:47,524 - DataRelationFinder - main - INFO - Encontradas 1 potenciais FKs.
+2025-10-07 20:08:47,525 - DataRelationFinder - main - INFO - Verificando FKs de tabela_federal_grande para PKs em tabela_principal_grande
+2025-10-07 20:08:47,550 - DataRelationFinder - main - INFO - Encontradas 1 potenciais FKs.
+2025-10-07 20:08:47,550 - DataRelationFinder - main - INFO - Verificando FKs de tabela_principal_grande para PKs em tabela_academica_grande
+2025-10-07 20:08:47,563 - DataRelationFinder - main - INFO - Encontradas 1 potenciais FKs.
+2025-10-07 20:08:47,563 - DataRelationFinder - main - INFO - Verificando FKs de tabela_principal_grande para PKs em tabela_federal_grande
+2025-10-07 20:08:47,590 - DataRelationFinder - main - INFO - Encontradas 1 potenciais FKs.
+2025-10-07 20:08:47,590 - DataRelationFinder - main - INFO - Análise concluída. Total de 6 relações encontradas.
+2025-10-07 20:08:47,590 - DataRelationFinder - api - INFO - Análise concluída com sucesso. Encontradas 6 relações.

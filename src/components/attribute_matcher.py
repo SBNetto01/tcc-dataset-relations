@@ -1,54 +1,42 @@
-import pandas as pd
-import numpy as np
-import difflib
-from typing import List, Tuple, Dict
-
+import difflib #
 
 class AttributeMatcher:
+    def __init__(self):
+        """
+        Inicializa o AttributeMatcher.
+        Não precisa mais armazenar DataFrames ou limiares globais aqui,
+        pois os métodos serão mais focados.
+        """
+        pass
 
-    def __init__(self, df1: pd.DataFrame, df2: pd.DataFrame):
-        self.df1 = df1
-        self.df2 = df2
+    def get_name_similarity(self, name1: str, name2: str) -> float:
+        """
+        Calcula a medida de similaridade percentual entre dois nomes de colunas.
+        Utiliza difflib.SequenceMatcher. Retorna um valor entre 0 e 100.
 
-    def _string_similarity(self, str1: str, str2: str) -> float:
-        """Retorna medida de similaridade entre dois nomes de colunas. Utiliza SequenceMatcher (Levenshtein simplificado)."""
-        return difflib.SequenceMatcher(None, str1.lower(), str2.lower()).ratio()
+        Args:
+            name1 (str): Nome da primeira coluna.
+            name2 (str): Nome da segunda coluna.
 
-    def _data_type_similarity(self, col1: pd.Series, col2: pd.Series) -> bool:
-        """Verifica os tipos"""
-        return col1.dtype == col2.dtype
+        Returns:
+            float: Percentual de similaridade (0-100).
+        """
+        if not isinstance(name1, str) or not isinstance(name2, str):
+            # Trata casos onde os nomes podem não ser strings.
+            # Idealmente, os nomes das colunas são sempre strings.
+            return 0.0
+        
+        # Converte para minúsculas para comparação case-insensitive
+        str1_lower = name1.lower()
+        str2_lower = name2.lower()
+        
+        # difflib.SequenceMatcher().ratio() retorna um valor entre 0 e 1.
+        similarity_ratio = difflib.SequenceMatcher(None, str1_lower, str2_lower).ratio() #
+        
+        return similarity_ratio * 100 # Converte para porcentagem
 
-    def _value_distribution_similarity(self, col1: pd.Series, col2: pd.Series, threshold: float = 0.6) -> bool:
-        """Compara a distribuição de valores únicos entre duas colunas. Retorna True se a sobreposição for acima do threshold."""
-        set1 = set(col1.dropna().unique())
-        set2 = set(col2.dropna().unique())
-
-        if not set1 or not set2:
-            return False
-
-        intersection = len(set1.intersection(set2))
-        union = len(set1.union(set2))
-        similarity = intersection / union
-
-        return similarity >= threshold
-
-    def match_attributes(self, name_threshold: float = 0.8) -> List[Dict[str, str]]:
-        """Compara atributos entre os dois datasets e retorna pares similares."""
-        matches = []
-
-        for col1 in self.df1.columns:
-            for col2 in self.df2.columns:
-                name_sim = self._string_similarity(col1, col2)
-                type_sim = self._data_type_similarity(self.df1[col1], self.df2[col2])
-                dist_sim = self._value_distribution_similarity(self.df1[col1], self.df2[col2])
-
-                if name_sim >= name_threshold or (type_sim and dist_sim):
-                    matches.append({
-                        "Coluna Dataset 1": col1,
-                        "Coluna Dataset 2": col2,
-                        "Similaridade de Nome": round(name_sim, 2),
-                        "Tipos Compatíveis": type_sim,
-                        "Distribuição Semelhante": dist_sim
-                    })
-
-        return matches
+# Os métodos _data_type_similarity, _value_distribution_similarity, e match_attributes
+# podem ser removidos desta classe se ela for focada em ser um helper para o FKFinder.
+# O FKFinder usará os tipos do DataProfiler e a lógica de inclusão é específica dele.
+# Manter a classe mais simples e focada em fornecer a similaridade de nomes como
+# sua principal contribuição para o FKFinder.

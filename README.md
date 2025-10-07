@@ -134,3 +134,17 @@ Critérios de Aceitação:
 O sistema deve sempre trabalhar com cópias dos dados originais.
 
 O usuário deve confirmar antes de aplicar modificações permanentes.
+
+# TCC Dataset Relations
+
+Projeto desenvolvido como parte do TCC de Ciência da Computação da PUC-Rio.  
+O objetivo é descobrir possíveis relações entre dois datasets tabulares, mesmo que não possuam chaves explícitas.
+
+## Funcionalidades
+- Profiling básico dos datasets
+- Sugestão de possíveis chaves primárias
+- Comparação de atributos entre datasets
+- Comparação baseada em similaridade textual (fuzzy matching)
+- Interface de linha de comando (CLI)
+
+## Estrutura de Pastas
