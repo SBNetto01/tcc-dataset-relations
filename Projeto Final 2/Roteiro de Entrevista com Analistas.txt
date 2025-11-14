@@ -1,0 +1,83 @@
+Roteiro de Entrevista com Analistas de Dados – Projeto de TCC
+
+Título do Projeto: Identificação Automatizada de Relações (Chaves Primárias e Estrangeiras) entre Múltiplos Datasets com Metadados Parciais ou Ausentes.
+
+Objetivo da Entrevista: Coletar a perspectiva de profissionais experientes sobre a relevância do problema abordado, a viabilidade da solução proposta, e obter sugestões para aprimoramento do projeto de TCC que visa desenvolver uma ferramenta para automatizar a identificação de chaves primárias (PK) e estrangeiras (FK) entre diversos datasets.
+
+Data: __/__/____
+Nome do Entrevistado: ____________________________
+Empresa/Cargo do Entrevistado: ____________________________
+Nome do Entrevistador: [Seu Nome]
+
+I. Introdução e Apresentação (5-7 minutos)
+
+Agradecimento e Apresentação do Entrevistador:
+
+"Bom dia/Boa tarde, [Nome do Entrevistado]. Primeiramente, gostaria de agradecer imensamente sua disponibilidade e interesse em participar desta entrevista. Meu nome é [Seu Nome] e sou estudante de Ciência da Computação na [Sua Universidade]. Esta entrevista faz parte do desenvolvimento do meu Trabalho de Conclusão de Curso."
+Objetivo da Entrevista:
+
+"O objetivo desta conversa é obter sua valiosa perspectiva como analista de dados sobre um projeto que estou desenvolvendo. Estou buscando validar a relevância do problema que ele se propõe a resolver, a viabilidade da abordagem técnica e, se possível, colher sugestões de melhorias ou modificações que possam enriquecer o trabalho."
+Contextualização do Projeto de TCC:
+
+"Meu projeto de TCC, intitulado 'Identificação Automatizada de Relações entre Múltiplos Datasets', foca em um desafio comum na análise de dados: a dificuldade em conectar e integrar diferentes conjuntos de dados, especialmente quando os metadados são escassos, incompletos ou inexistentes. A ideia é desenvolver uma ferramenta que auxilie na descoberta de potenciais chaves primárias (PKs) em datasets individuais e, subsequentemente, na identificação de chaves estrangeiras (FKs) que possam relacionar esses datasets entre si."
+"A ferramenta visa facilitar análises de dados mais complexas e integradas, que muitas vezes são inviabilizadas pela falta de conhecimento prévio dessas relações."
+Confidencialidade e Duração:
+
+"Gostaria de assegurar que as informações compartilhadas aqui serão tratadas com confidencialidade e utilizadas exclusivamente para fins acadêmicos, no contexto do meu TCC. A entrevista deve durar aproximadamente [estimar duração, ex: 30-45 minutos]. Você concorda em prosseguirmos?"
+II. Experiência e Contexto do Profissional (5 minutos)
+
+"Para contextualizar suas respostas, poderia, por favor, descrever brevemente sua experiência profissional como analista de dados? Por exemplo, há quanto tempo atua na área e com que tipos de desafios relacionados à integração de dados você costuma lidar?"
+"Em seu trabalho diário, com que frequência você se depara com a necessidade de integrar ou relacionar múltiplos datasets que não possuem metadados claros ou documentação sobre suas interconexões?"
+III. Apresentação Detalhada da Ferramenta Proposta (7-10 minutos)
+
+"Permita-me detalhar um pouco mais a ferramenta que estou desenvolvendo:"
+Entrada de Dados: "O sistema é projetado para receber múltiplos datasets como entrada (atualmente focando em arquivos CSV, mas com potencial de expansão)."
+Perfilamento de Dados: "Para cada dataset, a ferramenta realiza um perfilamento inicial, identificando características como tipos de dados por coluna, contagem de valores únicos, percentual de nulos, entre outras estatísticas descritivas."
+Identificação de Chaves Primárias (PKs) Candidatas: "Com base no perfilamento, o sistema sugere colunas candidatas a PKs em cada dataset, utilizando critérios como alta unicidade e baixo percentual de valores nulos. Esses critérios são ajustáveis por limiares."
+Identificação de Relações de Chave Estrangeira (FKs): "Em seguida, para pares de datasets, a ferramenta busca por potenciais relações FK-PK. Isso é feito considerando:"
+"Compatibilidade dos tipos de dados entre a coluna candidata a FK e a PK candidata."
+"Análise de dependência de inclusão: verificamos qual a porcentagem dos valores da coluna FK candidata está presente na coluna PK candidata. Um limiar de inclusão também é configurável."
+"Heurística de similaridade de nomes de colunas: utilizamos algoritmos de similaridade de strings para calcular um score entre os nomes da FK e da PK candidatas, o que pode ajudar a priorizar ou refinar as sugestões."
+Saída: "Ao final, a ferramenta apresenta um relatório com as PKs candidatas por dataset e as relações FK-PK potenciais identificadas entre os datasets, incluindo os scores de inclusão e similaridade de nomes."
+IV. Perguntas sobre Viabilidade, Relevância e Abordagem (10-15 minutos)
+
+Relevância do Problema:
+
+"Considerando sua experiência, quão significativo e frequente você considera o problema de identificar relações entre datasets com metadados limitados no dia a dia de um analista de dados?"
+"Você acredita que uma ferramenta com a proposta descrita poderia trazer um benefício real para o trabalho de análise e preparação de dados?" Por quê?
+Viabilidade e Adequação da Solução:
+
+"A abordagem de identificar PKs através de unicidade e não-nulidade, e FKs por meio de compatibilidade de tipo, dependência de inclusão e similaridade de nomes lhe parece tecnicamente sólida e viável para o problema proposto?"
+"Você vislumbra alguma limitação ou desafio principal nessa abordagem que eu deveria considerar com mais atenção?"
+Utilidade das Funcionalidades:
+
+"As funcionalidades descritas (perfilamento, sugestão de PK, sugestão de FK com base nos critérios mencionados) são, em sua opinião, as mais críticas para resolver este tipo de problema?"
+"A configurabilidade de limiares (para unicidade de PK, inclusão de FK, similaridade de nome) é um aspecto importante para a usabilidade da ferramenta em cenários reais?"
+V. Perguntas sobre Possíveis Modificações e Melhorias (5-7 minutos)
+
+Funcionalidades Adicionais:
+
+"Pensando nas suas necessidades e desafios diários, haveria alguma funcionalidade adicional que você consideraria muito útil em uma ferramenta como esta?"
+"Por exemplo, seria útil a capacidade de lidar com chaves compostas (múltiplas colunas formando uma PK ou FK)? Ou talvez a sugestão de outros tipos de relações além de PK-FK, como colunas semanticamente equivalentes mesmo que não sejam chaves?"
+Aprimoramento das Funcionalidades Existentes:
+
+"Você tem alguma sugestão para aprimorar os critérios ou métodos que estou utilizando para identificar PKs ou FKs (ex: outras métricas de similaridade, considerações sobre cardinalidade, etc.)?"
+"Como você idealizaria a apresentação dos resultados para que fossem mais informativos e acionáveis para um analista?"
+Integração e Usabilidade:
+
+"Em que formato ou de que maneira seria mais útil para você receber as saídas dessa ferramenta (ex: relatório em texto, CSV, JSON, visualização gráfica, integração com outras ferramentas de ETL ou BI)?"
+VI. Desafios e Considerações Adicionais (3-5 minutos)
+
+"Quais seriam, na sua opinião, os maiores desafios para a adoção ou uso prático de uma ferramenta como esta em um ambiente corporativo?"
+"Há alguma consideração ética, de performance ou de escalabilidade que você acha que eu deveria ter em mente, mesmo sendo um projeto de TCC?"
+VII. Encerramento (2-3 minutos)
+
+Espaço para Comentários Adicionais:
+
+"Gostaria de abrir um espaço caso você tenha mais algum comentário, sugestão ou consideração que não tenha sido abordado nas perguntas."
+Agradecimento Final:
+
+"[Nome do Entrevistado], mais uma vez, muito obrigado pelo seu tempo e por compartilhar seus conhecimentos e experiência. Suas contribuições são extremamente valiosas para o desenvolvimento do meu TCC."
+Próximos Passos (Opcional):
+
+"Se você tiver interesse, posso compartilhar os avanços do projeto ou o relatório final quando estiver concluído."

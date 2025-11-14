@@ -1,0 +1,5 @@
+Pontos possíveis futuramente
+
+ 1- Possível implementação em formato para API
+
+ 2- Persistência da análise (manter a análise "salva" para reutilização em novas análises)

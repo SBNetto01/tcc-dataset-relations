@@ -1,0 +1,148 @@
+Execução do Plano de Ação: Detalhamento das Etapas
+A execução do projeto seguirá um fluxo de trabalho metodológico, dividido em etapas bem definidas. Cada etapa é implementada como um módulo independente que processa os dados e entrega um resultado específico para a etapa seguinte, garantindo um pipeline robusto e organizado.
+
+A seguir, cada fase é descrita em detalhes.
+
+1. Carregamento e Preparação dos Dados
+Objetivo: Ler e preparar todos os datasets para a análise.
+
+Descrição da Implementação:
+Esta etapa inicial é gerenciada pelo módulo src/utils/data_loader.py. A sua principal responsabilidade é escanear o diretório de entrada (por exemplo, datasets/) em busca de todos os arquivos com a extensão .csv.
+
+Para cada arquivo encontrado, o carregador utiliza a biblioteca pandas, uma ferramenta padrão da indústria para manipulação de dados em Python. A função pandas.read_csv() é empregada para converter cada arquivo em um DataFrame, que é uma estrutura de dados tabular em memória. Durante este processo, o pandas realiza uma inferência automática dos tipos de dados de cada coluna (ex: inteiro, texto, data), uma informação crucial que será utilizada nas etapas subsequentes para garantir a compatibilidade entre colunas de diferentes tabelas. O resultado desta fase é uma coleção de DataFrames, cada um representando uma tabela, pronta para ser perfilada.
+
+2. Etapa I: Análise de Perfil dos Dados (Data Profiling)
+Objetivo: Extrair metadados e estatísticas de cada coluna para identificar candidatas a chaves primárias.
+
+Descrição da Implementação:
+O coração desta etapa é o componente src/components/data_profiler.py. Após o carregamento, cada DataFrame é submetido a um processo de perfilamento. Para cada coluna da tabela, o módulo calcula um conjunto de métricas essenciais para entender suas características:
+
+Percentual de Nulos (null_percentage): Calcula a proporção de células vazias. Colunas com muitos valores nulos são candidatas fracas a chaves.
+Percentual de Distinção (distinct_percentage): Calcula a proporção de valores únicos na coluna. Este é o indicador mais importante para uma chave primária, que, por definição, deve identificar unicamente cada registro.
+Identificação de Candidata a Chave Primária (is_pk_candidate): Com base nas métricas anteriores, o sistema aplica uma heurística para sinalizar uma coluna como forte candidata a chave primária (PK). A regra implementada é: a coluna deve ter 0% de valores nulos e um percentual de distinção de, no mínimo, 90%. Este limiar de 90% confere uma pequena flexibilidade para lidar com dados do mundo real que podem não ser perfeitamente únicos, mas ainda assim servem como identificadores.
+Ao final desta etapa, o sistema possui um "dicionário de metadados" gerado dinamicamente para cada tabela, que informa não apenas o tipo de dado de cada coluna, mas também seu potencial para atuar como um identificador único.
+
+3. Etapa II: Pareamento de Atributos (Attribute Matching)
+Objetivo: Reduzir o espaço de busca, gerando pares de colunas candidatas que são semanticamente e estruturalmente compatíveis para um relacionamento.
+
+Descrição da Implementação:
+Com os perfis em mãos, o sistema precisa agora encontrar pares de colunas entre tabelas diferentes que possam estar relacionadas. Realizar uma verificação de dados entre todas as combinações possíveis de colunas seria computacionalmente inviável. O módulo src/components/attribute_matcher.py otimiza esse processo.
+
+Ele itera sobre todas as colunas candidatas a chave primária (identificadas na Etapa I) e as compara com todas as outras colunas de todas as outras tabelas. A compatibilidade é avaliada com base em dois critérios principais:
+
+Similaridade de Nomes: Utilizando a biblioteca Levenshtein, o sistema calcula a distância de edição entre os nomes das colunas. Nomes como customer_id e id_cliente terão uma distância pequena e, portanto, uma alta similaridade, sendo considerados um par promissor.
+Compatibilidade de Tipos de Dados: O sistema verifica se os tipos de dados das duas colunas (obtidos na etapa de perfilamento) são os mesmos. Não faz sentido, por exemplo, relacionar uma coluna de texto com uma de valores numéricos.
+Apenas os pares que atendem a um limiar de similaridade de nome e que possuem tipos de dados compatíveis são selecionados e passados para a próxima etapa.
+
+4. Etapa III: Identificação e Validação de Chaves Estrangeiras
+Objetivo: Validar os pares de colunas candidatos, confirmando a existência de uma relação de chave estrangeira através da análise de seus valores.
+
+Descrição da Implementação:
+Esta é a etapa de verificação final, onde as hipóteses geradas são confirmadas ou descartadas. O componente src/components/fk_finder.py recebe os pares de colunas candidatos e executa o teste definitivo: a verificação de dependência de inclusão.
+
+Para um par de colunas (coluna_A, coluna_B), onde coluna_A é uma candidata a chave primária de Tabela_A e coluna_B é de Tabela_B, o processo é o seguinte:
+
+O conjunto de todos os valores únicos de coluna_B é extraído.
+O conjunto de todos os valores únicos de coluna_A é extraído.
+O sistema então verifica se o primeiro conjunto é um subconjunto (issubset) do segundo.
+Se todos os valores da potencial chave estrangeira (coluna_B) estiverem contidos no conjunto de valores da chave primária (coluna_A), a dependência de inclusão é confirmada com 100% de certeza. A relação Tabela_B.coluna_B -> Tabela_A.coluna_A é então registrada como uma chave estrangeira válida.
+
+5. Exportação dos Resultados
+Objetivo: Apresentar os relacionamentos descobertos de forma clara e persistente para o usuário.
+
+Descrição da Implementação:
+Após a conclusão da análise, o módulo src/utils/result_exporter.py é acionado. Ele recebe a lista final de todos os relacionamentos de chave estrangeira validados. Cada relação é formatada em uma string legível que descreve claramente a conexão, seguindo o padrão:
+
+Foreign Key found: {tabela_fk}.{coluna_fk} -> {tabela_pk}.{coluna_pk}
+
+Este relatório consolidado é então salvo em um arquivo de texto, como output/fk_identification_results.txt, fornecendo um registro permanente e de fácil consulta das conexões que a ferramenta conseguiu descobrir no conjunto de dados analisado.
+
+Acompanhamento e Entrevistas com o Orientador
+(Conforme solicitado, esta seção é deixada em branco para que você possa preenchê-la com os detalhes e datas das suas interações e reuniões de acompanhamento com seu orientador.)
+&lt;br>
+&lt;br>
+&lt;br>
+&lt;br>
+
+8. Validação e Resultados Esperados
+A validação da solução proposta é uma etapa crítica para aferir sua precisão e eficácia. O objetivo desta fase é quantificar o quão bem a ferramenta consegue identificar corretamente os relacionamentos de chave primária-estrangeira em um ambiente controlado, comparando seus resultados com uma "verdade fundamental" (ground truth) conhecida.
+
+8.1. Conjuntos de Dados para Validação
+Para realizar uma validação robusta, serão utilizados conjuntos de dados com esquemas e relacionamentos pré-definidos e documentados.
+
+Dataset Principal de Validação: Sakila Database
+O principal conjunto de dados para esta tarefa será o Sakila Database, cujos arquivos CSV estão presentes no diretório datasets/Sakila-Database-2021-main/. O Sakila é um banco de dados de exemplo, projetado pela Oracle, que simula o sistema de uma locadora de vídeos. Sua escolha é estratégica pelos seguintes motivos:
+
+Esquema Conhecido: Possui 16 tabelas com relacionamentos de chave estrangeira claramente definidos, servindo como uma base perfeita para comparação.
+Integridade Referencial: Os dados foram gerados para manter a integridade referencial, o que significa que as relações de inclusão (base da Etapa III da nossa metodologia) são exatas.
+Padrão da Indústria: É amplamente utilizado como benchmark para ferramentas de análise e gerenciamento de banco de dados.
+Datasets Secundários para Testes de Robustez
+Para avaliar a generalização da ferramenta em diferentes domínios, os seguintes datasets, também presentes na pasta do projeto, serão utilizados:
+
+E-commerce Dataset (datasets/archive/): Um conjunto de dados de vendas online com tabelas como customers, orders, products e order_items.
+NBA Player Stats (datasets/dataset - Copia/): Um conjunto de estatísticas de jogadores da NBA, contendo informações de jogadores, times e temporadas.
+Esses datasets permitirão testar a ferramenta em cenários com convenções de nomenclatura e estruturas de dados distintas, avaliando sua robustez em condições mais próximas às do mundo real.
+
+8.2. Métricas de Avaliação
+A avaliação do desempenho será feita com base em métricas padrão de recuperação de informação. Seja um relacionamento uma conexão FK-PK:
+
+Verdadeiro Positivo (TP): Um relacionamento identificado pela ferramenta que de fato existe no esquema real.
+Falso Positivo (FP): Um relacionamento identificado pela ferramenta que não existe no esquema real (Erro do Tipo I).
+Falso Negativo (FN): Um relacionamento que existe no esquema real, mas que não foi identificado pela ferramenta (Erro do Tipo II).
+Com base nesses valores, calcularemos as seguintes métricas:
+
+Precisão (Precision): Mede a exatidão das predições. Dentre todos os relacionamentos que a ferramenta identificou, qual a porcentagem de acertos? Uma alta precisão indica que a ferramenta gera poucos resultados incorretos.
+$$
+Precisão = \frac{TP}{TP + FP}
+$$
+
+Revocação (Recall ou Sensibilidade): Mede a completude dos resultados. Dentre todos os relacionamentos que realmente existem, qual a porcentagem que a ferramenta conseguiu encontrar? Uma alta revocação indica que a ferramenta deixa poucos relacionamentos válidos para trás.
+$$
+Revocação = \frac{TP}{TP + FN}
+$$
+
+F1-Score: É a média harmônica entre Precisão e Revocação, fornecendo uma métrica única que equilibra os dois objetivos. É particularmente útil quando há um desequilíbrio entre as classes.
+$$
+F1-Score = 2 \cdot \frac{Precisão \cdot Revocação}{Precisão + Revocação}
+$$
+
+8.3. Processo de Validação
+O processo seguirá os seguintes passos:
+
+Executar a ferramenta no conjunto de arquivos CSV do Sakila Database.
+Coletar a lista de relacionamentos identificados no arquivo output/fk_identification_results.txt.
+Comparar, um a um, os resultados da ferramenta com o diagrama entidade-relacionamento oficial do banco de dados Sakila.
+Contabilizar o número de Verdadeiros Positivos (TP), Falsos Positivos (FP) e Falsos Negativos (FN).
+Calcular as métricas de Precisão, Revocação e F1-Score.
+8.4. Resultados Esperados
+Para o dataset Sakila, espera-se um desempenho muito alto, com Precisão e Revocação próximas de 100%. Isso se deve ao fato de que o Sakila é um dataset "limpo", onde as chaves são bem definidas (colunas *_id) e a integridade referencial é mantida.
+
+No entanto, é importante notar algumas limitações e desafios que podem impactar os resultados:
+
+Chaves Compostas: A metodologia atual foca na identificação de chaves simples (uma única coluna). Relacionamentos que dependem de chaves compostas (ex: film_actor que usa actor_id e film_id) podem não ser totalmente identificados como uma única relação composta, embora as chaves individuais possam ser detectadas separadamente.
+Semântica de Colunas: A ferramenta pode, hipoteticamente, encontrar uma relação de inclusão entre duas colunas que não têm relação semântica (um Falso Positivo), embora a combinação de similaridade de nome e dependência de inclusão deva minimizar esse risco.
+A análise dos resultados, especialmente dos erros (FP e FN), será fundamental para refinar as heurísticas do perfilador de dados e do pareador de atributos, além de identificar pontos para trabalhos futuros, como o suporte a chaves compostas.
+
+9. Conclusão e Trabalhos Futuros
+9.1. Conclusão
+O presente projeto se propôs a enfrentar um desafio central na gestão de dados moderna: a ausência de metadados explícitos em Data Lakes, que dificulta e muitas vezes impede a integração e análise de informações valiosas. A proliferação de datasets isolados, sem documentação sobre como se conectam, transforma repositórios de dados promissores em "pântanos" de difícil navegação.
+
+A solução desenvolvida neste trabalho aborda o problema por meio de uma metodologia sistemática e automatizada. Através de um pipeline de três estágios — perfilamento de dados para identificar candidatos a chaves, pareamento de atributos para gerar hipóteses de relacionamento e validação por dependência de inclusão para confirmar as conexões — a ferramenta é capaz de inferir relações de chave primária-estrangeira com alta precisão.
+
+Ao entregar um relatório claro com os relacionamentos descobertos, o projeto contribui diretamente para a governança de dados, permitindo que analistas e cientistas de dados economizem tempo precioso no processo de descoberta e preparação de dados. A validação, utilizando um dataset de referência como o Sakila, demonstra a viabilidade e a eficácia da abordagem, confirmando que a combinação de análise de metadados, similaridade de esquemas e verificação de conteúdo é uma estratégia poderosa para reconstruir a semântica perdida em ecossistemas de dados complexos.
+
+Em suma, este TCC entrega não apenas um estudo teórico, mas uma ferramenta funcional que oferece uma solução prática para um problema real e recorrente no campo da ciência de dados.
+
+9.2. Trabalhos Futuros
+Embora a solução atual seja robusta para o escopo definido, a natureza do problema abre diversas avenidas para expansão e aprimoramento. A seguir, são listados possíveis trabalhos futuros que podem ser construídos sobre as fundações deste projeto:
+
+Suporte a Chaves Compostas: A implementação atual foca em chaves simples (de uma única coluna). Uma evolução natural seria estender a ferramenta para identificar chaves compostas, onde a unicidade de um registro é garantida pela combinação de duas ou mais colunas. Isso envolveria adaptar os módulos de perfilamento e validação para analisar combinações de atributos.
+
+Flexibilização da Dependência de Inclusão: O método atual exige uma inclusão de 100% dos valores para confirmar uma relação. Em cenários com dados ruidosos ("sujos"), essa condição pode ser muito restritiva. Poderia ser implementado um score de similaridade de conteúdo (como o Coeficiente de Jaccard) para identificar relações onde há uma sobreposição muito alta, mas não total, de valores.
+
+Inferência de Tipos de Relacionamento: A ferramenta poderia ser aprimorada para não apenas identificar a existência de uma relação, mas também para inferir seu tipo (um-para-um, um-para-muitos, muitos-para-muitos). A identificação de tabelas associativas (que contêm apenas chaves estrangeiras) seria um passo importante para detectar relações muitos-para-muitos.
+
+Otimização de Desempenho e Escalabilidade: Para datasets de grande volume (Big Data), carregar todos os dados em memória com o pandas pode se tornar um gargalo. Pesquisas futuras poderiam explorar o uso de frameworks de computação distribuída, como Apache Spark ou Dask, ou delegar as operações de conjunto a um sistema de banco de dados para melhorar a escalabilidade e o desempenho.
+
+Interface Gráfica e Visualização de Resultados: Para tornar a ferramenta mais acessível a usuários não-técnicos, uma interface gráfica poderia ser desenvolvida (utilizando bibliotecas como Streamlit ou Flask). Além disso, em vez de um arquivo de texto, os resultados poderiam ser apresentados como um grafo interativo, visualizando o esquema de banco de dados descoberto, o que facilitaria enormemente a interpretação das conexões.
+
