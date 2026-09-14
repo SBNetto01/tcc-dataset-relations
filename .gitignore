@@ -7,3 +7,6 @@ output/
 
 # Arquivos de log
 logs/
+# Configuracao do editor
+.vscode/
+

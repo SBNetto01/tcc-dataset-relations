@@ -1,0 +1,9 @@
+pandas>=2.0
+fastapi>=0.110
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+rapidfuzz>=3.0
+
+# dev / tests
+pytest>=8.0
+faker>=24.0

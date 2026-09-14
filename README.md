@@ -1,150 +1,91 @@
-# tcc-dataset-relations
-Projeto de TCC de automatização de relações entre datasets
+# Data Relation Finder
 
-Possíveis requisitos do programa: Atualizar constantemente
+> Ferramenta para descobrir possíveis relações entre datasets tabulares, mesmo sem chaves explícitas.
 
-1. Requisitos Funcionais (RF)
-Os requisitos funcionais descrevem as funcionalidades que o sistema deve oferecer.
+Undergraduate final project (TCC), B.Sc. Computer Science — **PUC-Rio**.
 
-RF-01: Importação de Datasets
-📌 O sistema deve permitir a importação de datasets nos formatos CSV, JSON e SQL.
-Critérios de Aceitação:
+This tool analyzes tabular datasets (CSV) and automatically suggests **primary keys**, **foreign-key relationships** and **similar attributes** between tables, using a combination of statistical profiling and fuzzy textual matching. It is useful for data discovery, schema inference and data integration tasks.
 
-O usuário pode selecionar e carregar múltiplos arquivos CSV e JSON.
+## Key features
 
-O usuário pode conectar um banco de dados SQL e selecionar tabelas específicas.
+- **Data profiling** — column names, data types, unique/null counts for every dataset.
+- **Primary-key suggestion** — columns are ranked by *uniqueness* and *non-null* thresholds.
+- **Foreign-key detection** — candidate columns are tested for value *inclusion* across tables and compared by *name similarity* (fuzzy matching with `rapidfuzz`).
+- **Relation validation** — suggested relations are scored with a confidence level before being accepted.
+- **Harmonization** — suggests simple transformations (date/number formatting, whitespace normalization).
+- **Exports** — consolidated report as CSV, JSON and Markdown.
+- **Two interfaces** — interactive CLI and a FastAPI REST endpoint (with configurable thresholds).
 
-O sistema deve validar a estrutura dos arquivos para garantir que sejam carregados corretamente.
+## How it works
 
-RF-02: Perfilamento dos Dados
-📌 O sistema deve analisar a estrutura de cada dataset importado e gerar metadados sobre ele.
-Critérios de Aceitação:
+```
+Load CSV(s) → Profile each dataset → Suggest PKs → Match attributes (fuzzy)
+            → Detect candidate FKs (inclusion + name similarity) → Validate → Export report
+```
 
-O sistema deve identificar e exibir:
+Each analysis step is a dedicated component under `src/components/`, exposing a threshold
+parameter that is passed both from the CLI and from the API.
 
-Nome das colunas.
+## Tech stack
 
-Tipo de dado de cada coluna.
+| Area | Tools |
+|---|---|
+| Language | Python |
+| Data | pandas |
+| Fuzzy matching | rapidfuzz (difflib fallback) |
+| API | FastAPI (OpenAPI docs at `/docs`) |
+| Tests | pytest |
 
-Contagem de valores únicos.
+## Project structure
 
-Contagem de valores nulos.
+```
+.
+├── api.py                 # FastAPI application (POST /analyze_folder/)
+├── src/
+│   ├── main.py            # CLI entry point + orchestration
+│   ├── components/        # data_profiler, attribute_matcher, fk_finder, attribute_validator
+│   └── utils/             # file_handler, logger, data_loader, result_exporter
+├── tests/                 # pytest suite + data generators
+├── docs/                  # TCC documents (proposal, report, LaTeX)
+└── datasets/              # sample real datasets used in the project
+```
 
-O sistema deve armazenar esse perfilamento para referência futura.
+## Quickstart
 
-RF-03: Detecção de Similaridade entre Atributos
-📌 O sistema deve identificar atributos similares entre diferentes datasets.
-Critérios de Aceitação:
+```bash
+python -m venv .venv
+.venv\Scripts\activate        # Windows
+pip install -r requirements.txt
+```
 
-O sistema deve comparar colunas com base em:
+Run the CLI:
 
-Nome (similaridade textual).
+```bash
+python -m src.main --help
+```
 
-Tipo de dado.
+Run the API:
 
-Distribuição de valores.
+```bash
+uvicorn api:app --reload
+# interactive docs: http://localhost:8000/docs
+```
 
-O sistema deve gerar um score de similaridade para cada par de colunas comparadas.
+Run the tests:
 
-O usuário deve visualizar uma lista das possíveis colunas correspondentes.
+```bash
+pytest -v
+```
 
-RF-04: Identificação de Possíveis Relações entre Datasets
-📌 O sistema deve sugerir relações entre datasets, incluindo chaves estrangeiras implícitas.
-Critérios de Aceitação:
+## Documentation
 
-O sistema deve verificar se os valores de uma coluna candidata a chave estrangeira estão presentes em uma possível chave primária.
+All academic artifacts (project proposal, final report and LaTeX sources) are available
+under [`docs/`](./docs). The thesis was developed with a real-world use case: discovering
+relations between fisheries datasets (Brazilian fishing records).
 
-O sistema deve apresentar as relações identificadas com um nível de confiança baseado na análise dos dados.
+---
 
-RF-05: Validação das Relações Detectadas
-📌 O sistema deve permitir que o usuário valide as relações detectadas.
-Critérios de Aceitação:
+🇧🇷 Projeto final de graduação em Ciência da Computação na PUC-Rio, orientado pelo
+Instituto Tecgraf. Desenvolvido por **Sérgio Bernardelli Netto**.
 
-O sistema deve permitir que o usuário aceite ou rejeite relações sugeridas.
-
-O usuário pode visualizar estatísticas sobre a qualidade da correspondência antes de validar.
-
-RF-06: Ajustes e Harmonização dos Dados
-📌 O sistema deve oferecer opções para harmonizar os dados quando houver pequenas discrepâncias.
-Critérios de Aceitação:
-
-O sistema deve sugerir transformações, como:
-
-Padronização de formatos (ex.: datas, números).
-
-Remoção de espaços e caracteres especiais.
-
-O usuário pode aceitar ou rejeitar as transformações sugeridas.
-
-RF-07: Geração de Relatórios
-📌 O sistema deve gerar um relatório consolidado sobre as relações encontradas.
-Critérios de Aceitação:
-
-O relatório deve incluir:
-
-Resumo dos datasets analisados.
-
-Relações identificadas (chaves estrangeiras, similaridades).
-
-Sugestões de combinação (união, interseção, diferença).
-
-O relatório deve ser exportável nos formatos CSV, JSON e Markdown.
-
-2. Requisitos Não Funcionais (RNF)
-Os requisitos não funcionais especificam características de qualidade, desempenho e segurança do sistema.
-
-RNF-01: Linguagem e Tecnologias
-📌 O sistema deve ser desenvolvido em Python, utilizando bibliotecas para análise de dados.
-Critérios de Aceitação:
-
-O código deve utilizar pandas para manipulação de dados.
-
-O código pode usar difflib para análise de similaridade textual.
-
-O sistema pode utilizar sqlite3 ou SQLAlchemy para conexão com bases SQL.
-
-RNF-02: Desempenho e Escalabilidade
-📌 O sistema deve ser capaz de processar grandes volumes de dados de forma eficiente.
-Critérios de Aceitação:
-
-O tempo de processamento para datasets médios (~100MB) deve ser inferior a 5 minutos.
-
-O sistema deve utilizar técnicas de otimização, como processamento em lote.
-
-RNF-03: Interface e Usabilidade
-📌 O sistema deve apresentar uma interface clara para o usuário.
-Critérios de Aceitação:
-
-O sistema pode ter uma interface gráfica (ex.: Jupyter Notebook, Streamlit, Dash) ou ser baseado em linha de comando (CLI).
-
-As mensagens de erro devem ser descritivas e indicar como corrigir problemas.
-
-RNF-04: Documentação e Manutenção
-📌 O código deve ser bem documentado e seguir boas práticas de desenvolvimento.
-Critérios de Aceitação:
-
-Cada função principal deve ter um docstring explicando sua funcionalidade.
-
-O repositório deve conter um arquivo README.md com instruções de uso.
-
-RNF-05: Segurança e Integridade dos Dados
-📌 O sistema deve garantir que os dados originais não sejam alterados sem autorização.
-Critérios de Aceitação:
-
-O sistema deve sempre trabalhar com cópias dos dados originais.
-
-O usuário deve confirmar antes de aplicar modificações permanentes.
-
-# TCC Dataset Relations
-
-Projeto desenvolvido como parte do TCC de Ciência da Computação da PUC-Rio.  
-O objetivo é descobrir possíveis relações entre dois datasets tabulares, mesmo que não possuam chaves explícitas.
-
-## Funcionalidades
-- Profiling básico dos datasets
-- Sugestão de possíveis chaves primárias
-- Comparação de atributos entre datasets
-- Comparação baseada em similaridade textual (fuzzy matching)
-- Interface de linha de comando (CLI)
-
-## Estrutura de Pastas
+[Portfolio](https://sbnetto01.github.io/Portfolio-SBN/) · [LinkedIn](https://www.linkedin.com/in/sergio-b-netto/)
